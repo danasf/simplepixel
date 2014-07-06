@@ -1,8 +1,13 @@
   /* 
     Experiments in Assembly Language and bit-banging WS2812B/Neopixel Lights
+    
+    Dana Sniezko, 2014 
+    Public Domain
+
+    If you need lights:
     https://www.adafruit.com/products/1138
     
-    This sketch should make your first light turn blue
+    If you're looking for a full-featured LED library try Adafruit Neopixel or FastLED!
     
     Arduinos typically run at 16Mhz, one clock-instruction every 0.0625 uS
     
@@ -52,7 +57,8 @@
   }
 
   void loop() {
-   
+    // if you uncomment the for loops this should make 1 LED turn blue
+
     // no interrupts, we need fine control over timing
     noInterrupts();
     
