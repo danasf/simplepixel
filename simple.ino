@@ -30,7 +30,7 @@
     
     To latch values
     50.00 uS+ LOW
-    
+
   */
 
   /* 
@@ -51,7 +51,7 @@
      // wait a second! 
      delay(1000);
 
-     // set pin 6 on PortD to output
+     // set bit 6 (aka Arduino pin 6) on PortD to output
      DDRD = DDRD | B01000000;
 
   }
@@ -72,8 +72,11 @@
       and ~14 cycles of LOW
       */
       
-      // GCC-AVR inline assembly, OMG, super useful resource:
-      // http://www.nongnu.org/avr-libc/user-manual/inline_asm.html
+     /* GCC-AVR inline assembly, OMG, super useful resource:
+        http://www.nongnu.org/avr-libc/user-manual/inline_asm.html
+        Also, Amtel ASM guide http://www.atmel.com/Images/doc1022.pdf
+        You could use rjmp .+0 instead of nop to make this less verbose
+     */
      asm(
      "sbi %0,%1\n\t" // 2 cycles, SET pin HIGH
      "nop\n\t"       // don't do anything 
