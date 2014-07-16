@@ -46,17 +46,17 @@
   */
   #define LEDPIN PORTD6 
 
-  void setup() {
-    
+    void setup() {
+
      // wait a second! 
      delay(1000);
 
      // set bit 6 (aka Arduino pin 6) on PortD to output
      DDRD = DDRD | B01000000;
 
-  }
+   }
 
-  void loop() {
+   void loop() {
     // if you uncomment the for loops this should make 1 LED turn blue
 
     // no interrupts, we need fine control over timing
@@ -77,7 +77,7 @@
         Also, Amtel ASM guide http://www.atmel.com/Images/doc1022.pdf
         You could use rjmp .+0 instead of nop to make this less verbose
      */
-     asm(
+     asm volatile(
      "sbi %0,%1\n\t" // 2 cycles, SET pin HIGH
      "nop\n\t"       // don't do anything 
      "nop\n\t"       // don't do anything
@@ -98,13 +98,13 @@
      "nop\n\t"      // don't do anything 
      "nop\n\t"      // don't do anything 
      "nop\n\t"      // don't do anything, OFF for 0.875 uS
-      :: 
+     :: 
       // inputs, the port and led pin
-      "I" _SFR_IO_ADDR((PORT)),
-      "I" (LEDPIN)  
-      );
+     "I" _SFR_IO_ADDR((PORT)),
+     "I" (LEDPIN)  
+     );
    // }
-    
+
     // send 8 bits of 1, aka 255
    // for(int i=0; i < 8*1; i++) {
 
@@ -114,7 +114,7 @@
     we need ~13 cycles of HIGH
     and ~7 cycles of LOW
     */
-    asm(
+    asm volatile(
     "sbi %0,%1\n\t" // 2 cycles, set pin HIGH
     "nop\n\t"       // don't do anything for 11 cycles
     "nop\n\t"       // don't do anything
