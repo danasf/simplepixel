@@ -7,7 +7,7 @@ Public Domain
 #define PORT PORTD
 #define BITS 8
 // 24 bits * number of LEDs == all to white
-#define NUM_BYTES 24*15
+#define NUM_BITS 24*15
 #define LEDPIN PORTD6
 
 void setup() {
@@ -56,7 +56,7 @@ void loop() {
     "I" _SFR_IO_ADDR((PORT)),
     "I" (LEDPIN),
     "r" (BITS),
-    "r" (NUM_BYTES)
+    "r" (NUM_BITS)
     );
     // delay > 50 microseconds to LATCH!
     delayMicroseconds(60);
