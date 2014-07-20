@@ -7,7 +7,7 @@ Public Domain
 #define PORT PORTD
 #define BITS 8
 // 24 bits * number of LEDs == all to white
-#define NUM_BITS 24*15
+#define NUM_BYTES (8*15)
 #define LEDPIN PORTD6
 
 void setup() {
@@ -28,27 +28,27 @@ void loop() {
 
 
     /*
-    Sending a 1
-    0.80uS HIGH, 0.45uS LOW
-    we need ~13 cycles of HIGH
-    and ~7 cycles of LOW
-    */
+Sending a 1
+0.80uS HIGH, 0.45uS LOW
+we need ~13 cycles of HIGH
+and ~7 cycles of LOW
+*/
     asm volatile(
     "sendbit:\n\t" // Label for sending a bit
     "sbi %0,%1\n\t" // 2 cycles, set pin HIGH
-    "rjmp .+0\n\t" //  2 cycles,don't do anything
-    "rjmp .+0\n\t" //  2 cycles, don't do anything
-    "rjmp .+0\n\t" //  2 cycles, don't do anything
-    "rjmp .+0\n\t" //  2 cycles, don't do anything
-    "rjmp .+0\n\t" //  2 cycles, don't do anything
+    "rjmp .+0\n\t" // 2 cycles,don't do anything
+    "rjmp .+0\n\t" // 2 cycles, don't do anything
+    "rjmp .+0\n\t" // 2 cycles, don't do anything
+    "rjmp .+0\n\t" // 2 cycles, don't do anything
+    "rjmp .+0\n\t" // 2 cycles, don't do anything
     "nop\n\t" // don't do anything, ON for 0.813 uS
     "cbi %0,%1\n\t" // 2 cycles, set pin LOW
-    "rjmp .+0\n\t" //  2 cycles, don't do anything 
+    "rjmp .+0\n\t" // 2 cycles, don't do anything
     "dec %2\n\t" // 1 cycle, subtract 1 from bit
     "breq newbyte\n\t" // 1 or 2 cycles, if bit == 0, go to new byte
     "rjmp sendbit\n\t" // 2, otherwise jump back to the bit
     "newbyte:\n\t" // label for next byte
-    "ldi %2,8\n\t" // reset bit count to 8 bits 
+    "ldi %2,8\n\t" // reset bit count to 8 bits
     "dec %3\n\t" // remove 1 from byte count
     "brne sendbit\n\t" // if byte count is not 0, send another bit
     ::
