@@ -4,13 +4,14 @@ Experiments with hand-tuned ASM on Arduino with addressable LEDs.
 
 Written at [Hacker School](http://www.hackerschool.com/), Summer 2014.
 
-These attempt to control popular WS2812B (aka [Neopixel](https://www.adafruit.com/search?q=neopixel) LEDs). They have been tested to work on 16Mhz ATMega168 and ATMega328 based Arduino boards.
+This library attempts to control popular WS2812B (aka [Neopixel](https://www.adafruit.com/search?q=neopixel) LEDs). It has been tested to work on 16Mhz ATMega168 and ATMega328 based Arduino boards. Use Digital Pin 6.
+
+If you're looking for a more flexible library, please check out AdaFruit Neopixel or FastLED!
 
 =======
 
-* simple.ino, send a 0 or 1
-* simpleloop.ino, loop through, send all 1s (white)
-* simplecolor.ino, send rgb color values!!!
+* simple.ino, really, really simple. Looking at timing, send a 0 or 1.
+* simplecolor.ino, send rgb color values
 
 
 Learning Resources
