@@ -1,19 +1,20 @@
 /**
-* Simple WS2812B / Neopixel Driver
+*  Simple WS2812B / Neopixel Driver
+*  Dana Sniezko & Alex Segura
+*  Coded at Hacker School (http://www.hackerschool.com), Summer 2014
 *
-*
-* Dana Sniezko & Alex
-* Coded at Hacker School (http://www.hackerschool.com), Summer 2014
-* MIT License
-*
-*
+*  General resources:
+*  http://www.avr-asm-tutorial.net/avr_en/beginner/
+*  http://www.avrbeginners.net/
+*  http://www.arduino.cc/
+*  https://learn.adafruit.com/adafruit-neopixel-uberguide/overview
 **/
 
 #define NUM_LEDS 15        // number of LEDs
 #define BYTES (NUM_LEDS*3) // each LED has 3 color channels, NUM_LED*3
 #define PORT PORTD         // PORTD, see http://www.arduino.cc/en/Reference/PortManipulation
 #define LEDPIN PORTD6      // pin 6 on Arduino
-#define DEBUG TRUE         // Debug is on
+#define DEBUG true         // Debug is on
 
 uint8_t* leds = NULL;
 
@@ -104,8 +105,8 @@ void updateStrip() {
     * To send a 0, we need:
     * 6 cycles on, 14 off 
     **/
-    asm volatile(
-    "sendbit:"  "\n\t"               // Label for sending a bit
+  asm volatile(
+  "sendbit:"  "\n\t"                 // Label for sending a bit
     "st %a[portptr],%[high]"  "\n\t" // 2 cycles, set port HIGH (T=2), needed for sending either 0 or 1
     "sbrc %[cur],7" "\n\t"           // if MSB a 1, do the next instruction, else skip (1-2 cycle) (T=4)
     "mov %[temp],%[high]" "\n\t"     // move high into temp, 1 cycle (T=4)
@@ -122,7 +123,7 @@ void updateStrip() {
     "nop" "\n\t"                     // do nothing for 1 cycle (T=17)
     "nop" "\n\t"                     // do nothing for 1 cycle (T=18)
     "rjmp sendbit"  "\n\t"           // jump back to the bit label (T=20)
-    "newbyte:"  "\n\t"               // label for next byte (T=10)
+  "newbyte:"  "\n\t"                 // label for next byte (T=10)
     "ldi %[bits],8" "\n\t"           // reset bit count to 8 bits (T=11)
     "st %a[portptr],%[low]" "\n\t"   // 2 cycles, sets PORT to LOW (T=12)
     "dec %[bytes]"  "\n\t"           // remove 1 from byte count, 1 cycle (T=13)
@@ -131,18 +132,20 @@ void updateStrip() {
     "nop" "\n\t"                     // do nothing for 1 cycle 1 (T=17)
     "nop" "\n\t"                     // do nothing for 1 cycle 1 (T=18)
     "brne sendbit"  "\n\t"           // (T=20) if byte count is not 0, send another bit!
-    ::
-    // input operands
-    // https://stackoverflow.com/questions/57483/what-are-the-differences-between-pointer-variable-and-reference-variable-in-c/57492#57492
-    [portptr] "e" (&PORT),
-    [bits] "r" (bits),
-    [bytes] "r" (bytes),
-    [temp] "r" (temp),
-    [high] "r" (high),
-    [low] "r" (low),
-    [p] "e" (p),
-    [cur] "r" (current)
-    );
-    delayMicroseconds(60); // latch data
-    interrupts(); // we can enable interrupts again
+  : 
+  // outputs NONE
+  :
+  // inputs 
+  // helpful resource: http://www.nongnu.org/avr-libc/user-manual/inline_asm.html
+  [portptr] "e" (&PORT),
+  [bits] "r" (bits),
+  [bytes] "r" (bytes),
+  [temp] "r" (temp),
+  [high] "r" (high),
+  [low] "r" (low),
+  [p] "e" (p),
+  [cur] "r" (current)
+  );
+  delayMicroseconds(60); // latch data
+  interrupts(); // we can enable interrupts again
 }
