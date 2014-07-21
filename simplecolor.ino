@@ -30,49 +30,69 @@ void setup() {
 
 
 void loop() {
-  
- // while x < number of LEDS
- for (int x=0; x < NUM_LEDS; x++) {
-  setColor(x,0,255,0); 
+ seqFill(255,0,0,30); // seq fill red
+ seqFill(0,255,0,30); // seq fill green
+ seqFill(0,0,255,30); // seq fill blue
+ scanner(255,0,0,40); // larson scanner
+ sine(0.05,10);
+ //rainbow(0.01,10); // rainbows .... to implement  
+}
 
+// sequential fill
+void seqFill(uint8_t r, uint8_t g, uint8_t b, uint8_t wait) {
+  // loop through
+  for (int x=0; x < NUM_LEDS; x++) {
+    if(DEBUG) {  debug(x); }
+    setColor(x,r,g,b); 
+    updateStrip();
+    delay(wait); 
+  }
+}
+
+// quick fill
+void quickFill(uint8_t r, uint8_t g, uint8_t b, uint8_t wait) {
+  // loop through
+  for (int x=0; x < NUM_LEDS; x++) {
+    if(DEBUG) {  debug(x); }
+    setColor(x,r,g,b); 
+  }
   updateStrip();
-  debug(x); 
-  delay(30);  
-}
-for (int x=0; x < NUM_LEDS; x++) {
-  uint8_t *p = leds + x*3;
-  setColor(x,255,0,0); 
-  updateStrip();
-  debug(x); 
-  delay(30); 
+  delay(wait); 
 }
 
-for (int x=0; x < NUM_LEDS; x++) {
-  uint8_t *p = leds + x*3;
-  setColor(x,0,0,255); 
-
-  updateStrip();
-       // debug
-  Serial.print(x);
-  Serial.print(":");
-  Serial.print(*p++);
-  Serial.print(",");
-  Serial.print(*p++);
-  Serial.print(",");
-  Serial.println(*p);  
-  delay(30);  
-  
+// Larson Scanner
+void scanner(uint8_t r, uint8_t g, uint8_t b, uint8_t wait) {
+  for (int x=0; x < NUM_LEDS; x++) {
+    clear();
+    setColor(x,r,g,b);
+    updateStrip();
+    delay(wait); 
+  }
+  for (int x=NUM_LEDS; x > 0; x--) {
+    clear();
+    setColor(x,r,g,b);
+    updateStrip();
+    delay(wait); 
+  }
 }
 
+// Sine wave
+void sine(float rt, uint8_t wait) {
+  float in,r;
+  for(in = 0; in < PI*2; in = in+rt) {
+    for(int i=0; i < NUM_LEDS; i++) {
+      // 3 offset sine waves make a rainbow
+      r = sin(i+in) * 127 + 128;
+      setColor(i,(uint8_t)r,0,0);
+    }
+    updateStrip();
+    delay(wait);
+  }
 }
 
-
-// make a color from RGB values
-void setColor(uint16_t pixel,uint8_t r, uint8_t g, uint8_t b) {
-  uint8_t *p = leds + pixel*3;
-  *p++ = r;
-  *p++ = g;
-  *p = b;
+// blank out strip buffer
+void clear() {
+  memset(leds,0,BYTES);  
 }
 
 // debug function, prints out buffer at position x
@@ -86,6 +106,14 @@ void debug(uint16_t x) {
   Serial.print(",");
   Serial.println(*p);
 
+}
+
+// make a color from RGB values, these strips are wired GRB so store in that order
+void setColor(uint16_t pixel,uint8_t r, uint8_t g, uint8_t b) {
+  uint8_t *p = leds + pixel*3;
+  *p++ = g;
+  *p++ = r;
+  *p = b;
 }
 
 void updateStrip() {
