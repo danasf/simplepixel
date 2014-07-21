@@ -58,7 +58,9 @@
 
     // no interrupts, we need fine control over timing
     noInterrupts();
-    
+    volatile uint8_t high = PORT | _BV(LEDPIN); // high = PORTD6 is high 
+    volatile uint8_t low =  PORT & ~_BV(LEDPIN); 
+
     // send 16 bits of 0s, 0
     //  for(int i=0; i < 8*2; i++) {
 
@@ -75,12 +77,12 @@
         You could use rjmp .+0 instead of nop to make this less verbose
      */
      asm volatile(
-     "sbi %[port],%[pin]\n\t" // 2 cycles, SET pin HIGH (T=2)
+     "st %a[portptr],%[high]\n\t" // 2 cycles, SET port HIGH (T=2)
      "nop\n\t"       // don't do anything (T=3)
      "nop\n\t"       // don't do anything (T=4)
      "nop\n\t"       // don't do anything (T=5)
      "nop\n\t"       // don't do anything, ON for 0.375 uS (T=6)
-     "cbi %[port],%[pin]\n\t" // 2 cycles LOW , SET pin LOW (T=8)
+     "st %a[portptr],%[low]\n\t" // 2 cycles set port low (T=8)
      "nop\n\t"      // don't do anything for 12 cycles (T=9)
      "nop\n\t"      // don't do anything (T=10)
      "nop\n\t"      // don't do anything (T=11)
@@ -95,8 +97,9 @@
      "nop\n\t"      // don't do anything, OFF for 0.875 uS (T=20)  
      :: 
       // inputs, the port and led pin
-     [port] "I" _SFR_IO_ADDR((PORT)),
-     [pin] "I" (LEDPIN)  
+     [portptr] "e" (&PORT),
+     [high] "r" (high),
+     [low] "r" (low),
      );
    // }
 
@@ -110,7 +113,7 @@
     and ~7 cycles of LOW
     */
     asm volatile(
-    "sbi %[port],%[pin]\n\t" // 2 cycles, set pin HIGH (T=2)
+    "st %a[portptr],%[high]\n\t" // 2 cycles, set port HIGH (T=2)
     "nop\n\t"       // don't do anything for 11 cycles (T=3)
     "nop\n\t"       // don't do anything (T=4)
     "nop\n\t"       // don't do anything (T=5)
@@ -122,7 +125,7 @@
     "nop\n\t"       // don't do anything (T=11)
     "nop\n\t"       // don't do anything (T=12)
     "nop\n\t"       // don't do anything, ON for 0.813 uS (T=13)
-    "cbi %[port],%[pin]\n\t" // 2 cycles, set pin LOW (T=15)
+    "st %a[portptr],%[low]\n\t" // 2 cycles, set port LOW (T=15)
     "nop\n\t"       // don't do anything for 5 cycles (T=16)
     "nop\n\t"       // don't do anything (T=17)
     "nop\n\t"       // don't do anything (T=18)
@@ -130,8 +133,9 @@
     "nop\n\t"       // don't do anything, OFF for 0.438 uS (T=20)
     :: 
     // input operands
-    [port]  "I" _SFR_IO_ADDR((PORT)),
-    [pin]   "I" (LEDPIN)  
+    [portptr] "e" (&PORT),
+    [high] "r" (high),
+    [low] "r" (low),
     );
   //  }
     // delay > 50 microseconds to LATCH!
