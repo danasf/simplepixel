@@ -134,8 +134,8 @@ void updateStrip() {
     * 6 cycles on, 14 off 
     **/
   asm volatile(
-  "sendbit:"  "\n\t"                 // Label for sending a bit
-    "st %a[portptr],%[high]"  "\n\t" // 2 cycles, set port HIGH (T=2), needed for sending either 0 or 1
+  "sendbit:"  "\n\t"                 // Label for sending a bit (T=0)
+    "st %a[portptr],%[high]"  "\n\t" // 2 cycles, set port HIGH, needed for sending either 0 or 1 (T=2)
     "sbrc %[cur],7" "\n\t"           // if MSB a 1, do the next instruction, else skip (1-2 cycle) (T=4)
     "mov %[temp],%[high]" "\n\t"     // move high into temp, 1 cycle (T=4)
     "dec %[bits]" "\n\t"             // decrement bit count, 1 cycle (T=5)

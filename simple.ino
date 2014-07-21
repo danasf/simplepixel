@@ -1,4 +1,5 @@
   /* 
+
     Experiments in Assembly Language and bit-banging WS2812B/Neopixel Lights
     
     Dana Sniezko, 2014 
@@ -14,7 +15,7 @@
     WS2812B datasheet shows these lights run at 800Khz. 
     http://www.mikrocontroller.net/attachment/180459/WS2812B_preliminary.pdf
     
-    Each LED pixel is wired wired Green-Red-Blue. We need 20 Arduino instruction cycles to pass 1 bit of data to them!
+    Each LED pixel is wired wired Green-Red-Blue. We need 20 Arduino instruction cycles to pass 1 byte of data to them!
     
     Sending a 0
     0.40uS HIGH, 0.85uS LOW
@@ -30,10 +31,7 @@
     
     To latch values
     50.00 uS+ LOW
-
-  */
-
-  /* 
+ 
     We're using PORTD, see these resources for more about ports and port manipulation
     http://arduino.cc/en/Hacking/PinMapping168
     http://www.arduino.cc/en/Reference/PortManipulation
@@ -41,8 +39,7 @@
   #define PORT PORTD
 
   /* 
-    LED pin, bit 6 of PORTD
-    also Digital Pin 6 in Arduino
+    LED pin, bit 6 of PORTD, also Digital Pin 6 in Arduino
   */
   #define LEDPIN PORTD6 
 
@@ -78,30 +75,28 @@
         You could use rjmp .+0 instead of nop to make this less verbose
      */
      asm volatile(
-     "sbi %0,%1\n\t" // 2 cycles, SET pin HIGH
-     "nop\n\t"       // don't do anything 
-     "nop\n\t"       // don't do anything
-     "nop\n\t"       // don't do anything 
-     "nop\n\t"       // don't do anything, ON for 0.375 uS
-     "cbi %0,%1\n\t" // 2 cycles LOW , SET pin LOW
-     "nop\n\t"      // don't do anything for 12 cycles
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything 
-     "nop\n\t"      // don't do anything, OFF for 0.875 uS
+     "sbi %[port],%[pin]\n\t" // 2 cycles, SET pin HIGH (T=2)
+     "nop\n\t"       // don't do anything (T=3)
+     "nop\n\t"       // don't do anything (T=4)
+     "nop\n\t"       // don't do anything (T=5)
+     "nop\n\t"       // don't do anything, ON for 0.375 uS (T=6)
+     "cbi %[port],%[pin]\n\t" // 2 cycles LOW , SET pin LOW (T=8)
+     "nop\n\t"      // don't do anything for 12 cycles (T=9)
+     "nop\n\t"      // don't do anything (T=10)
+     "nop\n\t"      // don't do anything (T=11)
+     "nop\n\t"      // don't do anything (T=12)
+     "nop\n\t"      // don't do anything (T=13)
+     "nop\n\t"      // don't do anything (T=14)
+     "nop\n\t"      // don't do anything (T=15)
+     "nop\n\t"      // don't do anything (T=16)
+     "nop\n\t"      // don't do anything (T=17)
+     "nop\n\t"      // don't do anything (T=18)
+     "nop\n\t"      // don't do anything (T=19)
+     "nop\n\t"      // don't do anything, OFF for 0.875 uS (T=20)  
      :: 
       // inputs, the port and led pin
-     "I" _SFR_IO_ADDR((PORT)),
-     "I" (LEDPIN)  
+     [port] "I" _SFR_IO_ADDR((PORT)),
+     [pin] "I" (LEDPIN)  
      );
    // }
 
@@ -115,28 +110,28 @@
     and ~7 cycles of LOW
     */
     asm volatile(
-    "sbi %0,%1\n\t" // 2 cycles, set pin HIGH
-    "nop\n\t"       // don't do anything for 11 cycles
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything 
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything, ON for 0.813 uS
-    "cbi %0,%1\n\t" // 2 cycles, set pin LOW
-    "nop\n\t"       // don't do anything for 5 cycles
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything 
-    "nop\n\t"       // don't do anything
-    "nop\n\t"       // don't do anything, OFF for 0.438 uS
+    "sbi %[port],%[pin]\n\t" // 2 cycles, set pin HIGH (T=2)
+    "nop\n\t"       // don't do anything for 11 cycles (T=3)
+    "nop\n\t"       // don't do anything (T=4)
+    "nop\n\t"       // don't do anything (T=5)
+    "nop\n\t"       // don't do anything (T=6)
+    "nop\n\t"       // don't do anything (T=7)
+    "nop\n\t"       // don't do anything (T=8)
+    "nop\n\t"       // don't do anything (T=9)
+    "nop\n\t"       // don't do anything (T=10)
+    "nop\n\t"       // don't do anything (T=11)
+    "nop\n\t"       // don't do anything (T=12)
+    "nop\n\t"       // don't do anything, ON for 0.813 uS (T=13)
+    "cbi %[port],%[pin]\n\t" // 2 cycles, set pin LOW (T=15)
+    "nop\n\t"       // don't do anything for 5 cycles (T=16)
+    "nop\n\t"       // don't do anything (T=17)
+    "nop\n\t"       // don't do anything (T=18)
+    "nop\n\t"       // don't do anything (T=19)
+    "nop\n\t"       // don't do anything, OFF for 0.438 uS (T=20)
     :: 
     // input operands
-    "I" _SFR_IO_ADDR((PORT)),
-    "I" (LEDPIN)  
+    [port]  "I" _SFR_IO_ADDR((PORT)),
+    [pin]   "I" (LEDPIN)  
     );
   //  }
     // delay > 50 microseconds to LATCH!
