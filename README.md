@@ -34,11 +34,18 @@ AVR / Arduino
 
 ![ATMega](./support/Atmega168PinMap2.png)
 
+Other libraries for reference
+
+* [Adafruit Neopixel](https://github.com/adafruit/Adafruit_NeoPixel)
+* [Fast LED](https://github.com/FastLED/FastLED)
+* [Light WS2811](https://github.com/cpldcpu/light_ws2812)
+
 Neopixels / WS2812B LEDs
 
 The datasheet, Adafruit's guide and other libraries can be a good reference if you get stuck!
 
 * [WS2812B Datasheet](./support/ws2812b.pdf)
 * [Adafruit Neopixel Uberguide](https://learn.adafruit.com/adafruit-neopixel-uberguide/overview) and [Adafruit Neopixel](https://github.com/adafruit/Adafruit_NeoPixel) library
-* [Bit-banging Neopixels](http://www.instructables.com/id/Bitbanging-step-by-step-Arduino-control-of-WS2811-/)
+* [Bit-banging WS2811s](http://www.instructables.com/id/Bitbanging-step-by-step-Arduino-control-of-WS2811-/)
 * [Advanced Secrets of Neopixels](http://wp.josh.com/2014/05/13/ws2812-neopixels-are-not-so-finicky-once-you-get-to-know-them/)
+
