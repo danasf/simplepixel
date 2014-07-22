@@ -99,7 +99,7 @@
       // inputs, the port and led pin
      [portptr] "e" (&PORT),
      [high] "r" (high),
-     [low] "r" (low),
+     [low] "r" (low)
      );
    // }
 
@@ -135,7 +135,7 @@
     // input operands
     [portptr] "e" (&PORT),
     [high] "r" (high),
-    [low] "r" (low),
+    [low] "r" (low)
     );
   //  }
     // delay > 50 microseconds to LATCH!
